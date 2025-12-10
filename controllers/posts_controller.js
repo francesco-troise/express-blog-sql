@@ -2,24 +2,22 @@
 const posts = require("../data/posts");
 const array_posts = require("../data/posts");
 
+//import dell'oggetto "connection"
+const connection = require(`../database`);
+
 //Le seguenti sono funzioni da esportare e richiamare nel router, per abbinare ad un percorso una determinata azione
 
 //Index
 function index(req, res) {
-  if (req.query.tag) {
-    const not_found = false;
-    const { tag } = req.query;
-    const posts_filtered = array_posts.filter((post) => {
-      return post.tags.includes(tag);
-    });
+  const sql = "SELECT * FROM `posts`";
 
-    if (posts_filtered.length === 0) {
-      return res.status(404).json({ messaggio: "Nessun tag corrispondente" });
-    }
-
-    return res.json(posts_filtered);
-  }
-  return res.json(array_posts);
+  //Recupero dei dati relativi alla Index
+  connection.query(sql, (err, results) => {
+    //Gestione dell'eventuale errore
+    if (err) return res.status(500).json({ error: "Errore nel database" });
+    //Invio dei risultati
+    res.json(results);
+  });
 }
 
 //Show
